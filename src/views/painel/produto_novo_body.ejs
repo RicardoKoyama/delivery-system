@@ -1,0 +1,23 @@
+<h1>Novo Produto</h1>
+
+<form method="POST" action="/produtos">
+
+  <label>Descrição</label>
+  <input name="descricao" required />
+
+  <label>Valor</label>
+  <input name="valor" type="number" step="0.01" required />
+
+  <label>Categoria</label>
+  <select name="id_categoria">
+    <option value="">Selecione</option>
+    <% categorias.forEach(c => { %>
+      <option value="<%= c.id %>"><%= c.descricao %></option>
+    <% }) %>
+  </select>
+
+  <label>Composição</label>
+  <textarea name="composicao"></textarea>
+
+  <button class="btn">Salvar</button>
+</form>

@@ -1,0 +1,60 @@
+<h1><%= cliente.nome %></h1>
+
+<div class="card">
+  <p><b>Telefone:</b> <%= cliente.telefone %></p>
+</div>
+
+<h2>Endereços</h2>
+
+<a href="/clientes/<%= cliente.id %>/enderecos/novo" class="btn">
+  ➕ Novo endereço
+</a>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Descrição</th>
+      <th>Endereço</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% enderecos.forEach(e => { %>
+      <tr>
+        <td><%= e.descricao %></td>
+        <td>
+          <%= e.endereco %>, <%= e.numero %>
+          <% if (e.complemento) { %> - <%= e.complemento %> <% } %><br>
+          <%= e.bairro %> – <%= e.cidade %><br>
+          CEP: <%= e.cep %>
+        </td>
+        <td>
+          <% if (!e.principal) { %>
+            <a href="/clientes/<%= cliente.id %>/enderecos/<%= e.id %>/principal"
+              title="Definir principal">
+              <i class="fa-solid fa-star"></i>
+            </a>
+          <% } else { %>
+            <i class="fa-solid fa-star text-gold"></i>
+          <% } %>
+
+          <a href="/clientes/<%= cliente.id %>/enderecos/<%= e.id %>/editar">
+            <i class="fa-solid fa-pen"></i>
+          </a>
+
+          <form method="POST"
+                action="/clientes/<%= cliente.id %>/enderecos/<%= e.id %>/excluir"
+                style="display:inline"
+                onsubmit="return confirm('Excluir endereço?')">
+            <button class="btn-icon">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </form>
+        </td>
+
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<a href="/clientes" class="btn">← Voltar</a>

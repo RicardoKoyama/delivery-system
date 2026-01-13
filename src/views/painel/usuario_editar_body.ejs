@@ -1,0 +1,21 @@
+<h1>Editar Usuário</h1>
+
+<form method="POST" action="/usuarios/<%= usuario.id %>/editar">
+  <label>Nome</label>
+  <input name="nome" value="<%= usuario.nome %>" required />
+
+  <label>Nova senha (opcional)</label>
+  <input type="password" name="senha" />
+
+  <label>Perfil</label>
+  <select name="id_perfil">
+    <% perfis.forEach(p => { %>
+      <option value="<%= p.id %>"
+        <%= usuario.id_perfil == p.id ? 'selected' : '' %>>
+        <%= p.descricao %>
+      </option>
+    <% }) %>
+  </select>
+
+  <button class="btn">Salvar</button>
+</form>

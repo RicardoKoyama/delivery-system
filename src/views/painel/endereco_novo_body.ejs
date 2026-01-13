@@ -1,0 +1,34 @@
+<h1>Novo Endereço</h1>
+
+<form method="POST" action="/clientes/<%= clienteId %>/enderecos">
+
+  <label>Descrição</label>
+  <input name="descricao" required />
+  <br>
+
+  <label>Logradouro</label>
+  <input name="endereco" required />
+  <br>
+
+  <label>Número</label>
+  <input name="numero" required />
+  <br>
+
+  <label>Complemento</label>
+  <input name="complemento" />
+  <br>
+
+  <label>Bairro</label>
+  <input name="bairro" required />
+  <br>
+
+  <label>Cidade</label>
+  <input name="cidade" required />
+  <br>
+
+  <label>CEP</label>
+  <input name="cep" required />
+  <br>
+
+  <button type="submit" class="btn">Salvar</button>
+</form>

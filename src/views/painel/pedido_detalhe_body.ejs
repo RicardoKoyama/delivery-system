@@ -1,0 +1,55 @@
+<h1>Pedido #<%= pedido.id %></h1>
+
+<h3>Cliente</h3>
+<p>
+  <strong><%= pedido.cliente %></strong><br>
+  <%= pedido.endereco %>, <%= pedido.numero %> – <%= pedido.bairro %>
+</p>
+
+<h3>Itens</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Produto</th>
+      <th>Qtd</th>
+      <th>Valor</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% pedido.itens.forEach(i => { %>
+      <tr>
+        <td><%= i.descricao %></td>
+        <td><%= i.quantidade %></td>
+        <td>R$ <%= Number(i.valor).toFixed(2) %></td>
+        <td>R$ <%= Number(i.total).toFixed(2) %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<h3>Resumo</h3>
+<p>
+  <strong>Forma de pagamento:</strong> <%= pedido.tipo_pagamento %><br>
+  <strong>Entrega:</strong> <%= pedido.tipo_entrega %><br>
+  <strong>Status atual:</strong> <%= pedido.status %><br>
+  <strong>Valor total:</strong> R$ <%= Number(pedido.valor_total).toFixed(2) %>
+</p>
+
+<h3>Atualizar Status</h3>
+<form method="POST" action="/pedidos/<%= pedido.id %>/status">
+  <select name="id_status" required>
+    <option value="">Selecione</option>
+    <option value="1">Novo</option>
+    <option value="2">Confirmado</option>
+    <option value="3">Em preparação</option>
+    <option value="4">Saiu para entrega</option>
+    <option value="5">Entregue</option>
+    <option value="6">Cancelado</option>
+  </select>
+
+  <button class="btn">Atualizar</button>
+</form>
+
+<br>
+<a href="/pedidos" class="btn">← Voltar</a>

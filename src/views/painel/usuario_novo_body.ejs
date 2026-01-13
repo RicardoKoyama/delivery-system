@@ -1,0 +1,18 @@
+<h1>Novo Usuário</h1>
+
+<form method="POST" action="/usuarios">
+  <label>Nome</label>
+  <input name="nome" required />
+
+  <label>Senha</label>
+  <input type="password" name="senha" required />
+
+  <label>Perfil</label>
+  <select name="id_perfil" required>
+    <% perfis.forEach(p => { %>
+      <option value="<%= p.id %>"><%= p.descricao %></option>
+    <% }) %>
+  </select>
+
+  <button class="btn">Salvar</button>
+</form>

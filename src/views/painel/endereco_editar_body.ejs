@@ -1,0 +1,52 @@
+<h1>Editar Endereço</h1>
+
+<form method="POST"
+      action="/clientes/<%= clienteId %>/enderecos/<%= endereco.id %>/editar">
+
+  <label>Descrição</label>
+  <input name="descricao"
+         value="<%= endereco.descricao %>"
+         required />
+    <br>
+
+  <label>Logradouro</label>
+  <input name="logradouro"
+         value="<%= endereco.endereco %>"
+         required />
+         <br>
+
+  <label>Número</label>
+  <input name="numero"
+         value="<%= endereco.numero %>"
+         required />
+         <br>
+
+  <label>Complemento</label>
+  <input name="complemento"
+         value="<%= endereco.complemento || '' %>" />
+         <br>
+
+  <label>Bairro</label>
+  <input name="bairro"
+         value="<%= endereco.bairro %>"
+         required />
+         <br>
+
+  <label>Cidade</label>
+  <input name="cidade"
+         value="<%= endereco.cidade %>"
+         required />
+         <br>
+
+  <label>CEP</label>
+  <input name="cep"
+         value="<%= endereco.cep %>"
+         required />
+         <br>
+
+  <div style="margin-top:16px">
+    <button class="btn" type="submit">Salvar</button>
+    <a href="/clientes/<%= clienteId %>" class="btn">Cancelar</a>
+  </div>
+
+</form>

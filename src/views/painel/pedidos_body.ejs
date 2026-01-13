@@ -1,0 +1,46 @@
+<h1>Pedidos</h1>
+
+<form method="GET" action="/pedidos" style="margin-bottom: 20px;">
+  <label>Status:</label>
+  <select name="id_status">
+    <option value="">Todos</option>
+    <% status.forEach(s => { %>
+      <option value="<%= s.id %>"
+        <%= filtros.id_status == s.id ? 'selected' : '' %>>
+        <%= s.descricao %>
+      </option>
+    <% }) %>
+  </select>
+
+  <button class="btn">Filtrar</button>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Data</th>
+      <th>Cliente</th>
+      <th>Status</th>
+      <th>Valor</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% pedidos.forEach(p => { %>
+      <tr>
+        <td><%= p.id %></td>
+        <td><%= new Date(p.data_hora).toLocaleString('pt-BR') %></td>
+        <td><%= p.cliente %></td>
+        <td><%= p.status || '-' %></td>
+        <td>R$ <%= Number(p.valor_total).toFixed(2) %></td>
+        <td>
+          <a href="/pedidos/<%= p.id %>">
+            <i class="fa-solid fa-eye"></i>
+          </a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+

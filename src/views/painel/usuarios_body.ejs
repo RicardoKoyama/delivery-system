@@ -1,0 +1,36 @@
+<h1>Usuários</h1>
+
+<a href="/usuarios/novo" class="btn">➕ Novo Usuário</a>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Perfil</th>
+      <th>Status</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% usuarios.forEach(u => { %>
+      <tr>
+        <td><%= u.nome %></td>
+        <td><%= u.perfil %></td>
+        <td><%= u.ativo ? 'Ativo' : 'Inativo' %></td>
+        <td>
+          <a href="/usuarios/<%= u.id %>/editar">
+            <i class="fa-solid fa-pen"></i>
+          </a>
+
+          <form method="POST"
+                action="/usuarios/<%= u.id %>/toggle"
+                style="display:inline">
+            <button class="btn-icon">
+              <i class="fa-solid <%= u.ativo ? 'fa-ban' : 'fa-check' %>"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

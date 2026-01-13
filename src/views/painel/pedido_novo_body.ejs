@@ -1,0 +1,172 @@
+<h1>Novo Pedido</h1>
+
+<form method="POST" action="/pedidos" onsubmit="return submitPedido(this)">
+  <input type="hidden" name="itens_json" id="itens_json">
+
+  <label>Cliente</label>
+  <select name="id_cliente" id="cliente" onchange="carregarEnderecos()" required>
+    <option value="">Selecione</option>
+    <% clientes.forEach(c => { %>
+      <option value="<%= c.id %>"><%= c.nome %></option>
+    <% }) %>
+  </select>
+
+  <label>Forma de pagamento</label>
+  <select name="id_tipo_pagamento" required>
+    <% pagamentos.forEach(p => { %>
+      <option value="<%= p.id %>"><%= p.descricao %></option>
+    <% }) %>
+  </select>
+
+  <label>Tipo de entrega</label>
+  <select
+    name="id_tipo_entrega"
+    id="tipo_entrega"
+    data-retirada-id="<%= IDS?.RETIRADA || '' %>"
+    onchange="verificaEntrega()"
+    required>
+    <% entregas.forEach(e => { %>
+      <option value="<%= e.id %>"><%= e.descricao %></option>
+    <% }) %>
+  </select>
+
+  <div id="endereco-group">
+    <label>Endereço</label>
+    <select name="id_cliente_endereco" id="endereco" required disabled>
+      <option value="">Selecione um cliente primeiro</option>
+    </select>
+  </div>
+
+  <label>Observação</label>
+  <textarea name="observacao"></textarea>
+
+  <hr>
+
+  <h3>Itens do pedido</h3>
+
+  <% produtos.forEach(p => { %>
+    <div class="item-produto">
+      <input type="checkbox"
+             data-id="<%= p.id %>"
+             data-valor="<%= p.valor %>"
+             onchange="toggleProduto(this)">
+
+      <strong><%= p.descricao %></strong>
+      (R$ <%= Number(p.valor).toFixed(2) %>)
+
+      Qtd:
+      <input type="number"
+             min="1"
+             value="1"
+             disabled
+             oninput="calcularTotal()">
+    </div>
+  <% }) %>
+
+  <h3>Total: R$ <span id="total">0,00</span></h3>
+
+  <br>
+
+  <button class="btn">Salvar Pedido</button>
+  <a href="/pedidos" class="btn">Cancelar</a>
+</form>
+
+<script>
+function carregarEnderecos() {
+  const clienteId = document.getElementById('cliente').value;
+  const endereco = document.getElementById('endereco');
+
+  endereco.innerHTML = '';
+  endereco.disabled = true;
+
+  if (!clienteId) {
+    endereco.innerHTML = '<option>Selecione um cliente primeiro</option>';
+    return;
+  }
+
+  fetch(`/pedidos/cliente/${clienteId}/enderecos`)
+    .then(r => r.json())
+    .then(enderecos => {
+      endereco.innerHTML = '<option value="">Selecione</option>';
+      enderecos.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = `${e.endereco}, ${e.numero || 's/n'} – ${e.bairro || ''}`;
+        endereco.appendChild(opt);
+      });
+      endereco.disabled = false;
+    });
+}
+
+function verificaEntrega() {
+  const tipoSelect = document.getElementById('tipo_entrega');
+  const retiradaId = tipoSelect.dataset.retiradaId;
+  const grupo = document.getElementById('endereco-group');
+  const endereco = document.getElementById('endereco');
+
+  if (retiradaId && tipoSelect.value === retiradaId) {
+    grupo.style.display = 'none';
+    endereco.required = false;
+  } else {
+    grupo.style.display = 'block';
+    endereco.required = true;
+  }
+}
+
+
+function toggleProduto(check) {
+  const qtd = check.parentElement.querySelector('input[type=number]');
+  qtd.disabled = !check.checked;
+  if (!check.checked) qtd.value = 1;
+  calcularTotal();
+}
+
+function calcularTotal() {
+  let total = 0;
+  document.querySelectorAll('.item-produto').forEach(div => {
+    const check = div.querySelector('input[type=checkbox]');
+    const qtd = div.querySelector('input[type=number]');
+    if (check.checked) {
+      total += Number(check.dataset.valor) * Number(qtd.value);
+    }
+  });
+  document.getElementById('total').innerText =
+    total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+
+function submitPedido(form) {
+  const itens = [];
+
+  document.querySelectorAll('.item-produto').forEach(div => {
+    const check = div.querySelector('input[type=checkbox]');
+    const qtd = div.querySelector('input[type=number]');
+    if (check.checked) {
+      itens.push({
+        id_produto: Number(check.dataset.id),
+        quantidade: Number(qtd.value)
+      });
+    }
+  });
+
+  if (!itens.length) {
+    alert('Selecione ao menos um produto.');
+    return false;
+  }
+
+  document.getElementById('itens_json').value = JSON.stringify(itens);
+  return confirm(`Confirmar pedido?\n\nItens: ${itens.length}\nTotal: R$ ${document.getElementById('total').innerText}`);
+}
+
+  // 1) sincroniza tipo de entrega
+  verificaEntrega();
+
+  // 2) sincroniza cliente já selecionado
+  carregarEnderecos();
+
+  // 3) sincroniza produtos já marcados (autofill/cache)
+  document.querySelectorAll('.item-produto input[type=checkbox]').forEach(check => {
+    if (check.checked) {
+      toggleProduto(check);
+    }
+  });
+</script>

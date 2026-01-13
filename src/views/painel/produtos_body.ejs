@@ -1,0 +1,34 @@
+<h1>Produtos</h1>
+
+<a href="/produtos/novo" class="btn">➕ Novo Produto</a>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Descrição</th>
+      <th>Categoria</th>
+      <th>Valor</th>
+      <th>Status</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% produtos.forEach(p => { %>
+      <tr>
+        <td><%= p.descricao %></td>
+        <td><%= p.categoria || '-' %></td>
+        <td>R$ <%= Number(p.valor).toFixed(2) %></td>
+        <td><%= p.ativo ? 'ATIVO' : 'INATIVO' %></td>
+        <td>
+          <a href="/produtos/<%= p.id %>/editar"><i class="fa-solid fa-pen"></i></a>
+          <form method="POST"
+                action="/produtos/<%= p.id %>/excluir"
+                style="display:inline"
+                onsubmit="return confirm('Excluir produto?')">
+            <button class="btn-icon"><i class="fa-solid fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

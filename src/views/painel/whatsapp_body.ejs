@@ -1,0 +1,117 @@
+<h1>Console WhatsApp</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Instância</th>
+      <th>Status</th>
+      <th>Última atualização</th>
+      <th>QR Code</th>
+      <th>Ação</th>
+    </tr>
+  </thead>
+  <tbody id="whatsapp-tbody">
+    <% if (!instancias.length) { %>
+      <tr>
+        <td colspan="4">Nenhuma instância registrada</td>
+      </tr>
+    <% } %>
+
+    <% instancias.forEach(i => { %>
+      <tr>
+        <td><%= i.instance_name %></td>
+
+        <td>
+          <% if (i.status === 'ready') { %>
+            <span style="color:green;font-weight:bold;">Conectado</span>
+          <% } else if (i.status === 'qr') { %>
+            <span style="color:orange;font-weight:bold;">Aguardando QR</span>
+          <% } else if (i.status === 'starting') { %>
+            <span style="color:gray;">Iniciando</span>
+          <% } else { %>
+            <span style="color:red;">Desconectado</span>
+          <% } %>
+        </td>
+
+        <td>
+          <%= new Date(i.atualizado_em).toLocaleString('pt-BR') %>
+        </td>
+
+        <td>
+          <% if (i.status === 'qr' && i.qr_raw) { %>
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=<%= encodeURIComponent(i.qr_raw) %>"
+              alt="QR Code WhatsApp"
+            />
+          <% } else { %>
+            —
+          <% } %>
+        </td>
+        <td>
+          <button onclick="resetar('<%= i.instance_name %>')">
+            Resetar
+          </button>
+        </td>
+
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<script>
+async function atualizarStatusWhatsApp() {
+  try {
+    const res = await fetch('/whatsapp/status/json');
+    const data = await res.json();
+
+    const tbody = document.querySelector('#whatsapp-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (!data.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="4">Nenhuma instância registrada</td></tr>';
+      return;
+    }
+
+    data.forEach(i => {
+      let statusTxt = '';
+      if (i.status === 'ready') statusTxt = '<span style="color:green;font-weight:bold;">Conectado</span>';
+      else if (i.status === 'qr') statusTxt = '<span style="color:orange;font-weight:bold;">Aguardando QR</span>';
+      else if (i.status === 'starting') statusTxt = '<span style="color:gray;">Iniciando</span>';
+      else statusTxt = '<span style="color:red;">Desconectado</span>';
+
+      let qrHtml = '—';
+      if (i.status === 'qr' && i.qr_raw) {
+        qrHtml = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(i.qr_raw)}" />`;
+      }
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${i.instance_name}</td>
+          <td>${statusTxt}</td>
+          <td>${new Date(i.atualizado_em).toLocaleString('pt-BR')}</td>
+          <td>${qrHtml}</td>
+        </tr>
+      `;
+    });
+
+  } catch (e) {
+    console.error('Erro ao atualizar status WhatsApp', e);
+  }
+}
+
+async function resetar(instance) {
+  if (!confirm('Deseja realmente resetar esta sessão WhatsApp?')) return;
+
+  await fetch('/whatsapp/reset', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ instance_name: instance })
+  });
+}
+
+// Atualiza a cada 5s
+setInterval(atualizarStatusWhatsApp, 5000);
+</script>

@@ -1,0 +1,43 @@
+<h1>Clientes</h1>
+
+<a href="/clientes/novo" class="btn">
+  ➕ Novo Cliente
+</a>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Telefone</th>
+      <th>Status</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% clientes.forEach(c => { %>
+      <tr>
+        <td>
+          <a href="/clientes/<%= c.id %>"><%= c.nome %></a>
+        </td>
+        <td><%= c.telefone %></td>
+        <td><%= c.ativo ? 'Ativo' : 'Inativo' %></td>
+        <td>
+          <a href="/clientes/<%= c.id %>/editar">
+            <i class="fa-solid fa-pen"></i>
+          </a>
+
+          <form method="POST"
+                action="/clientes/<%= c.id %>/excluir"
+                style="display:inline"
+                onsubmit="return confirm('Desativar cliente?')">
+            <button class="btn-icon">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </form>
+        </td>
+
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
